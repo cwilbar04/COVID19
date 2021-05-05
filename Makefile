@@ -7,7 +7,7 @@ test:
 	python -m pytest -vv
 
 lint:
-	pylint --disable=R,C scraper tests webapp data_model get_schedule
+	pylint --disable=R,C . tests
 
 venv_create: 
 	python -m venv ..\.venv
