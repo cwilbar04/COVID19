@@ -4,10 +4,15 @@ The main module for this repository.
 This script calls the covid.py and census,py scripts to load transformed
 COVID and Census data in to Pandas Dataframes.
 
-The script then combines these two datasets and renames the columns.
+This job is intended to be run daily and overwrite the current export file.
 
-Finally, when called directly an output file is placed in this directory:
-covid19data_withpopulationdata.csv
+The script then combines these two datasets and renames the columns to
+more human readable format.
+
+Finally, when called directly an output file is placed in the main directory:
+latest_covid19data_withpopulationdata.csv
+
+and a copy is written to the data/history folder to store the history.
 """
 
 #Import Packages
@@ -54,6 +59,6 @@ if __name__ == '__main__':
     print(f'Started creating dataset at {datetime.now()}')
     output_df = main()
     OUTPUT_FILE = 'covid19data_withpopulationdata.csv'
-    output_df.to_csv(OUTPUT_FILE, sep=',', header=True, index=False)
-    print(f'''Sucessfully output {len(output_df.index)} rows to
-                {OUTPUT_FILE} at {datetime.now()}''')
+    output_df.to_csv(f'latest_{OUTPUT_FILE}', sep=',', header=True, index=False)
+    output_df.to_csv(f'./data/history/{datetime.today().strftime("%Y%m%d")}_{OUTPUT_FILE}', sep=',', header=True, index=False)
+    print(f'Sucessfully output {len(output_df.index)} rows to latest_{OUTPUT_FILE} at {datetime.now()}')

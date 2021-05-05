@@ -1,3 +1,3 @@
-pandas
-jupyterlab
-pylint
+pandas==1.2.4
+jupyterlab==3.0.14
+pylint==2.8.2

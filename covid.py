@@ -1,5 +1,29 @@
 """
-  This module is used to load the latest COVID19 data from the NY Times github repository
+  This module is used to load the latest COVID19 data from the NY Times github repository.
+
+  County Level data is loaded from:
+   https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv
+
+  See the README for more information about the data source:
+    https://github.com/nytimes/covid-19-data/blob/master/README.md 
+  
+  In some cases, the source data reports a NULL or missing value for cases/deaths. This 
+  module converts any null/missing values to 0.
+
+  The source data for New York City, New York, Kansas City, Missouri, and Joplin, Missouri 
+  is stored at the city level instead of the county level and does not have a fips code.
+  The data is transformed in this workflow to attribute the cases and deaths to the counties
+  that make up these cities based on the relative population of the respective counties.
+  2010 Census data with 2019 population estimates were used to identify the proportions used
+  for distributing the cases/deaths. The relative proportions and the affected counties can 
+  be found in the data/missing_fips_population_proportion.csv file.
+
+  The source data also reports cases/deaths for "Unknown" counties when the correct county
+  was unclear. In this analysis, we have chosen to assign a "state" level fips code using 
+  the codes found in the data/state_level_fips_codes.csv file. Population data for these 
+  entries are at the state level allowing the user to quickly access to state population and
+  get a better picture of the full number of cases/deaths when aggregating in an entire state
+  or the entire US.
 """
 
 # Import packages
