@@ -161,6 +161,7 @@ Possible future enhancements include:
 - Only loading deltas instead of fully re-creating the database every day. Possibly just get new daily totals during the week and do a full reload on the weekends
 - Introduce PySpark to load the data from the source system in parallel if the data becomes too large
 - Create DevOps workflow with CI/CD to allow multiple contributors and automated testing
+- Containerize the code to remove any workstation dependencies
 
 ## Thank You
 
