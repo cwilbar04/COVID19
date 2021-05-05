@@ -13,7 +13,7 @@ For every FIPS code and Date the data contains:
 - Daily Cases
 - Daily Deaths
 - 2010 Population
-- Estimated 2019 Population. 
+- Estimated 2019 Population
 
 **Note that the population values for "Unknown" counties are the population totals for the entire state but the cases and deaths are those where the correct county is unknown.** 
 
@@ -100,7 +100,7 @@ python -m pytest -vv
 
 ## Data Sources
 
-### COVID-19 Data
+### New York Times COVID-19 Data
 Cumulative Cases and Deaths of Coronavirus (Covid-19) Data in the United States is dowloaded directly from the [NY Times Github Repository](https://github.com/nytimes/covid-19-data).
 
 In particular, the raw CSV for [U.S. County-Level Data](https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv) is loaded in to a pandas datafram in the covid.py script.
@@ -117,15 +117,50 @@ Additionally, there are a few ["geographic exceptions"](https://github.com/nytim
 - **Missing FIPS Code for Kansas City, Missouri and Joplin, Missouri**
   - Similar to NYC, total cases for Kansas City and Joplin are reported at the city level instead of the county level and there is not FIPS code for these cities. In these cases, however, the counties have borders that extend outside of the city limits and there is data for these FIPS codes that represent cases/deaths that occurred oustide of the city limits. In this case, I have again chosen to proportionally break the cases for the two cities in to their respective counties based on population size and in this case I have added the proportionate amount to the already existing rows. The [missing_fips_population_proportion.csv](/data/missing_fips_population_proportion.csv) file contains the proprortions for these counties as well and I have again chosen to round down. Ultimately, this means the data for these counties are rough estimates but the total cases/deaths more accurately reflects the true total because I have not discarded the data for these three cities.
 - **"Unknown" Counties**
-  - 
+  - The source data also lists cases/deaths for "Unknown" counties in individual states. In this case, I have decided to use a "state" level FIPS code with a county number of "0" in order to not lose this data when combined with the census data. The data file [state_level_fips_codes.csv](/data/state_level_fips_codes.csv) contains the state level FIPS codes that I have used. I have replaced the misisng FIPS code with the value found in this dataset so that I can join the data to the census data which reports total state population using these codes.
+- **Combined Counties in Alaska**
+  - The source data combines some small counties in Alaska an produces a non-standard FIPS code for these combinations that does not match with the data in the census data. Overall, these counties represent an insignificant amount of cases/deaths and as such I have not addressed this issue at this time. If requested, the cases could be split in to their respective counties in a similar fashion as done with NYC, Kansas City, and Joplin
 
+Ultimately, the source data is transformed in the covid.py module using the above rules to produce a transformed data set with cumulative and daily cases and deaths for each FIPS per date.
 
+### 2019 Population Estimate Data
+In order to calculate case and death rates per population, Census data from the US Census Bureau website is downloaded and transformed to be joined wiht the COVID-19 data.
 
+In particular, I have downloaded the [Population, Population Change, and Estimated Components of Population Change: April 1, 2010 to July 1, 2019 (CO-EST2019-alldata)](https://www.census.gov/data/datasets/time-series/demo/popest/2010s-counties-total.html#par_textimage_70769902) dataset containing information from the 2010 US Census and Population Estimations for all US Counties. For ease of use, the dataset was downloaded locally and uploaded to github in the data folder as the [co-est2019-alldata.csv](/data/co-est2019-alldata.csv) dataset.
 
+We are only interested in the 2010 actual population and the 2019 population estimate for each county so only that data is loaded and transformed in the census.py module.
+
+This data stores the FIPS code separated in to its individual components as integers instead of strings so I had to create a FIPS code that matches the fips code in the COVID data using the following code:
+
+```python
+census['FIPS'] = census['STATE'].astype(str).str.zfill(2) + census['COUNTY'].astype(str).str.zfill(3)
+```
+
+Here I create a new column FIPS that is the concatenation of a 2-digit STATE code plus a 3-digit COUNTY code. Spot checking this in the EDA notebook confirmed this matched the fips code in the COIVD-19 dataset.
 
 ## Output Data
 
+The two data sources described [above](#data-sources) are then joined in the main.py module using an INNER JOIN on the fips code in the COVID-19 data and the manually created FIPS code in the Census data set. Note this means that the Alasks counties I did not clean and any of the US territories data is dropped from the dataset and only the data with population estimates is stored.
+
+The resulting pandas dataframe in then stored in two places:
+- [latest_covid19data_withpopulationdata.csv](latest_covid19data_withpopulationdata.csv) is overwritten in the topl level of the directory and represents the current version of the dataset to use for analytics
+- The data is also loaded to the [/data/history](/data/history) folder with the load date appended to the front so that the history can be re-created if necessary
+
 ## Future Considerations
+
+This repository serves as an intial minium viable product for a dta pipeline combining these two data sources.
+
+Possible future enhancements include:
+- Adding logic to adjust for the combined counties in Alaska
+- Investigating a better method/formula for distributing the cases/deaths in the missing fips code Cities and Unknown counties
+- Investigate adding logic to remove the inconsitency resulting in negative daily values and decreasing aggregation if possble
+- Persisting the data to a database system instead of using flat files
+- Introducing PySpark to load the data from the source system in parallel if the data becomes too large
+- Creating DevOps workflow with CI/CD to allow multiple contributors and automated testing
+
+## Thank You
+
+Thank you for checking out my COVID data pipeline repository. I would love to hear any comments/questions/concerns directly via e-mail at cwilbr@alumni.nd.edu or through opening an issue.
 
 
 
