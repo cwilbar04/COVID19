@@ -24,7 +24,7 @@ The repeatble data pipeline is stored in the top-level directory and broken in t
 - **[census.py](/census.py)** downloads and transforms the 2010 census data stored in the /data folder downloaded from the US Census Bureau and outputs a pandas dataframe
 - **[main.py](/main.py)** calls the load functions in the covid.py and census.py modules to get and merge the pandas dataframes in to one pandas dataframe and output and overwrite the latest csv file in the top-level directory and also upload a dated copy to the /data/history folder
 
-A daily schedule can be created that execute the main.py file directly from the top-level directory.
+A daily schedule can be created that executes the main.py file directly from the top-level directory.
 
 This repository also includes:
 - A heavily commented ["EDA"](/notebooks/EDA.ipynb) jupyter notebook in the [notebooks](/notebooks) folder used to initally test loading the data and identify data issues that are addressed in the transformation portion of the data pipelines. 
@@ -39,19 +39,22 @@ You must have a workstation with Git and Python 3 installed and in your class pa
 Optionally, install Make (See [best answer on StackOverflow](https://stackoverflow.com/questions/32127524/how-to-install-and-use-make-in-windows) for installing Make on Windows).
 
 ### Create your Own Pipeline
-To get started, clone the repository to your local drive and navigate to top level directory:
+
+#### 1. Clone Git Repository
+To get started, clone the repository to your local drive (follow prompts to authenticate to GitHub if requested) and navigate to top level directory:
 ```cmd
 git clone https://github.com/cwilbar04/COVID19.git
-cd COVID 19
+cd COVID19
 ```
 
+#### 2. Create and Activate Python Virtual Environment
 Next, create and activate a [python virtual environment](https://docs.python.org/3/tutorial/venv.html).  
 Below commands create and activate virtual environment in directory above the current working directory.  
 If desired to create virtual environment in a different location please change directory back to top level github directory after creating and activating viruatl environment.  
 
 **Windows**
 ```cmd
-python3 -m venv ..\.venv
+python -m venv ..\.venv
 .\..\.venv\Scripts\activate.bat
 ```  
 
@@ -61,8 +64,34 @@ python3 -m venv ..\.venv
 source /../.venv/bin/activate
 ```
 
+#### 3. Install Required Python Packages
+
+If you have Make:
+```cmd
+make install
+```
+
+else, execute:
+```cmd
+pip install -r requirements.txt
+```
+
+#### 4. Execute Main Script
+```cmd
+python main.py
+```
+
 
 ## Data Sources
+
+### COVID-19 Data
+Cumulative Cases and Deaths of Coronavirus (Covid-19) Data in the United States is dowloaded directly from the [NY Times Github Repository](https://github.com/nytimes/covid-19-data).
+
+In particular, the raw CSV for [U.S. County-Level Data](https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv) is loaded in to a pandas datafram in the covid.py script.
+
+According to the [Github README.md](https://github.com/nytimes/covid-19-data/blob/master/README.md) this data is compiled time series data from state and local governments and health departments in an attempt to provide a complete record of the ongoing outbreak. Currently, this pipeline pulls the "historical" data that contain data up to, but not including the current day, representing the final counts at the end of each day.  
+
+
 
 ## Output Data
 
