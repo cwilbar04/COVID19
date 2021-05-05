@@ -40,25 +40,26 @@ Optionally, install Make (See [best answer on StackOverflow](https://stackoverfl
 
 ### Create your Own Pipeline
 To get started, clone the repository to your local drive and navigate to top level directory:
-''' cmd
+```cmd
 git clone https://github.com/cwilbar04/COVID19.git
 cd COVID 19
-'''
+```
 
 Next, create and activate a [python virtual environment](https://docs.python.org/3/tutorial/venv.html).  
 Below commands create and activate virtual environment in directory above the current working directory.  
 If desired to create virtual environment in a different location please change directory back to top level github directory after creating and activating viruatl environment.  
 
 **Windows**
-''' cmd
+```cmd
 python3 -m venv ..\.venv
 .\..\.venv\Scripts\activate.bat
-'''
+```  
+
 **Mac\Linux**
-''' cmd
+```cmd
 python3 -m venv ..\.venv
 source /../.venv/bin/activate
-'''
+```
 
 
 ## Data Sources
