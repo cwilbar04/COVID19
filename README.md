@@ -29,32 +29,33 @@ A daily schedule can be created that execute the main.py file directly from the 
 This repository also includes:
 - A heavily commented ["EDA"](/notebooks/EDA.ipynb) jupyter notebook in the [notebooks](/notebooks) folder used to initally test loading the data and identify data issues that are addressed in the transformation portion of the data pipelines. 
 - Lookup tables created using the EDA notebook stored in the [/data](/data) directory. See [Data Sources](#data-sources) section for more info.
-- A [Makefile](/Makefile) for repeatable programatic executions
+- A [unique](/tests/unique_test.py) and [freshness](/tests/freshness_test.py) test script used with pytest to check the data loaded contains no duplicate entries and data was loaded from within the past 48 hours.
+- A [Makefile](/Makefile) for repeatable programatic executions.
 - A [requirements.txt](/requirements.txt) file with all python packages used in the code in this notebook.
 
 ## Getting Started
 ### Pre-requisites  
-You must have a workstation with Git and Python 3 installed and in your class path. 
+You must have a workstation with Git and Python 3 installed and in your class path.   
 Optionally, install Make (See [best answer on StackOverflow](https://stackoverflow.com/questions/32127524/how-to-install-and-use-make-in-windows) for installing Make on Windows).
 
 ### Create your Own Pipeline
 To get started, clone the repository to your local drive and navigate to top level directory:
-'''cmd
+''' cmd
 git clone https://github.com/cwilbar04/COVID19.git
 cd COVID 19
 '''
 
-Next, create and activate a [python virtual environment](https://docs.python.org/3/tutorial/venv.html).
-Below commands create and activate virtual environment in directory above the current working directory.
-If desired to create virtual environment in a different location please change directory back to top level github directory after creating and activating viruatl environment.
+Next, create and activate a [python virtual environment](https://docs.python.org/3/tutorial/venv.html).  
+Below commands create and activate virtual environment in directory above the current working directory.  
+If desired to create virtual environment in a different location please change directory back to top level github directory after creating and activating viruatl environment.  
 
 **Windows**
-'''cmd
+''' cmd
 python3 -m venv ..\.venv
 .\..\.venv\Scripts\activate.bat
 '''
 **Mac\Linux**
-'''cmd
+''' cmd
 python3 -m venv ..\.venv
 source /../.venv/bin/activate
 '''
