@@ -2,7 +2,6 @@ install:
 	pip install -r requirements.txt
 
 test:
-	cd tests
 	python -m pytest -vv
 
 lint:

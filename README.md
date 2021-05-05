@@ -81,6 +81,22 @@ pip install -r requirements.txt
 python main.py
 ```
 
+#### 5. Test Uniqueness and Freshness
+Here we use pytest to execute the test scripts in the tests directory.
+The unique_test.py script tests that there are no duplicate combinations of FIPS and date.
+The freshness_test.py script tests that maximum date is within 48 hours.
+Should see both tests pass. If not, further investigation is needed to understand what went wrong.
+
+If you have Make:
+```cmd
+make test
+```
+
+else, execute:
+```cmd
+python -m pytest -vv
+```
+
 
 ## Data Sources
 
@@ -89,7 +105,21 @@ Cumulative Cases and Deaths of Coronavirus (Covid-19) Data in the United States 
 
 In particular, the raw CSV for [U.S. County-Level Data](https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv) is loaded in to a pandas datafram in the covid.py script.
 
-According to the [Github README.md](https://github.com/nytimes/covid-19-data/blob/master/README.md) this data is compiled time series data from state and local governments and health departments in an attempt to provide a complete record of the ongoing outbreak. Currently, this pipeline pulls the "historical" data that contain data up to, but not including the current day, representing the final counts at the end of each day.  
+According to the [Github README.md](https://github.com/nytimes/covid-19-data/blob/master/README.md) this data is compiled time series data from state and local governments and health departments collected in an attempt to provide a complete record of the ongoing outbreak. Currently, this pipeline pulls the "historical" data that contain data up to, but not including the current day, representing the final counts at the end of each day. Future considerations could incorporate the "live" data as well but this data changes throughout the day so would be volatile for most reporting needs.
+
+The data reported by the NY Times is cumulative totals. In order to calculate the daily totals, I have taken the current days cummulative total - the previous days cummulative total. In some cases, the cummulative total decreases when there are corrections made. In this case, there will be "negative" daily totals. I have decided to allow negative daily totals to persist to identify these cases. It is advised that care be taken with these values and they be changed to 0 when appropriate.
+
+This data is mostly clean, however, there are some instances where there is a NULL or missing entry for cases or deaths. In this pipeline I have replaced NULLs/missing data with 0.
+
+Additionally, there are a few ["geographic exceptions"](https://github.com/nytimes/covid-19-data/blob/master/README.md#geographic-exceptions) in the data that result in missing FIPS codes. In order to present the most accurate aggregated data as possible, I have chosen to address the missingness in the following ways:
+- **Missing FIPS Code for New York City** 
+  - The NY Times reports all cases and deaths for NYC in one line item, but NYC actually consists of 5 separate counties with their own FIPS codes. In order to not lose this data, I have decided to assign the total cases and deaths for NYC proportionally to the 5 distinct counties based on their relative estimated 2019 population. Using the 2010 Census data, I have created a dataset in the data foloder: [missing_fips_population_proportion.csv](/data/missing_fips_population_proportion.csv). This dataset contains the 5 NYC boroughs and their "population proportion" representing the county's population/total NYC population. In the pipeline, I then create entries for all 5 boroughs and multiple the listed number of cases and deaths for NYC by the population proportion of each county (and round down because you can't have a proportion of a person). Thus, the data for the 5 New York counties is estimated proportionally based on the total NYC cases and deaths for a given day.
+- **Missing FIPS Code for Kansas City, Missouri and Joplin, Missouri**
+  - Similar to NYC, total cases for Kansas City and Joplin are reported at the city level instead of the county level and there is not FIPS code for these cities. In these cases, however, the counties have borders that extend outside of the city limits and there is data for these FIPS codes that represent cases/deaths that occurred oustide of the city limits. In this case, I have again chosen to proportionally break the cases for the two cities in to their respective counties based on population size and in this case I have added the proportionate amount to the already existing rows. The [missing_fips_population_proportion.csv](/data/missing_fips_population_proportion.csv) file contains the proprortions for these counties as well and I have again chosen to round down. Ultimately, this means the data for these counties are rough estimates but the total cases/deaths more accurately reflects the true total because I have not discarded the data for these three cities.
+- **"Unknown" Counties**
+  - 
+
+
 
 
 
@@ -98,4 +128,4 @@ According to the [Github README.md](https://github.com/nytimes/covid-19-data/blo
 ## Future Considerations
 
 
-https://portal.311.nyc.gov/article/?kanumber=KA-02877
+

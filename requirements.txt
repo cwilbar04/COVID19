@@ -1,3 +1,4 @@
 pandas==1.2.4
 jupyterlab==3.0.14
 pylint==2.8.2
+pytest==6.2.4
